@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B80099BD2AE837F80053C547 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80099BC2AE837F80053C547 /* MainView.swift */; };
 		B889EF9B2AE8324100F0E3DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B889EF9A2AE8324100F0E3DC /* AppDelegate.swift */; };
 		B889EF9D2AE8324100F0E3DC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B889EF9C2AE8324100F0E3DC /* SceneDelegate.swift */; };
 		B889EFA42AE8324200F0E3DC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B889EFA32AE8324200F0E3DC /* Assets.xcassets */; };
@@ -15,6 +16,7 @@
 
 /* Begin PBXFileReference section */
 		B80099B92AE837630053C547 /* NationWideToilet.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = NationWideToilet.xlsx; sourceTree = "<group>"; };
+		B80099BC2AE837F80053C547 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		B889EF972AE8324100F0E3DC /* SuddenPoopSaver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SuddenPoopSaver.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B889EF9A2AE8324100F0E3DC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B889EF9C2AE8324100F0E3DC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -34,12 +36,28 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		B80099B82AE8375A0053C547 /* Data */ = {
+		B80099B82AE8375A0053C547 /* Model */ = {
 			isa = PBXGroup;
 			children = (
 				B80099B92AE837630053C547 /* NationWideToilet.xlsx */,
 			);
-			path = Data;
+			path = Model;
+			sourceTree = "<group>";
+		};
+		B80099BA2AE837AD0053C547 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				B80099BC2AE837F80053C547 /* MainView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		B80099BB2AE837B50053C547 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				B889EFAE2AE832BD00F0E3DC /* MainViewController.swift */,
+			);
+			path = Controller;
 			sourceTree = "<group>";
 		};
 		B889EF8E2AE8324100F0E3DC = {
@@ -61,12 +79,13 @@
 		B889EF992AE8324100F0E3DC /* SuddenPoopSaver */ = {
 			isa = PBXGroup;
 			children = (
-				B80099B82AE8375A0053C547 /* Data */,
+				B80099BB2AE837B50053C547 /* Controller */,
+				B80099BA2AE837AD0053C547 /* View */,
+				B80099B82AE8375A0053C547 /* Model */,
 				B889EF9A2AE8324100F0E3DC /* AppDelegate.swift */,
 				B889EF9C2AE8324100F0E3DC /* SceneDelegate.swift */,
 				B889EFA32AE8324200F0E3DC /* Assets.xcassets */,
 				B889EFA82AE8324200F0E3DC /* Info.plist */,
-				B889EFAE2AE832BD00F0E3DC /* MainViewController.swift */,
 			);
 			path = SuddenPoopSaver;
 			sourceTree = "<group>";
@@ -141,6 +160,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B889EFAF2AE832BD00F0E3DC /* MainViewController.swift in Sources */,
+				B80099BD2AE837F80053C547 /* MainView.swift in Sources */,
 				B889EF9B2AE8324100F0E3DC /* AppDelegate.swift in Sources */,
 				B889EF9D2AE8324100F0E3DC /* SceneDelegate.swift in Sources */,
 			);
