@@ -1,2 +1,2 @@
-# SuddenPoop
+# SuddenPoopSaver
 Sudden Poop Saver
