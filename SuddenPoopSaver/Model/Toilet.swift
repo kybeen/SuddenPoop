@@ -40,9 +40,9 @@ import Foundation
  date: 데이터기준일자                                      ex) 2020-08-05
  */
 struct Toilet: Codable {
-    var num: Int
-    var type: String
-    var name: String
+    var num: Int?
+    var type: String?
+    var name: String?
     var streetNameAddr: String?
     var streetNumberAddr: String?
     var manBigToiletNum: Int?
@@ -50,24 +50,88 @@ struct Toilet: Codable {
     var manDisabledBigToiletNum: Int?
     var manDisabledSmallToiletNum: Int?
     var manChildBigToiletNum: Int?
-    var manChindSmallToiletNum: Int?
+    var manChildSmallToiletNum: Int?
     var womanBigToiletNum: Int?
     var womanDisabledBigToiletNum: Int?
     var womanChildBigToiletNum: Int?
     var managementAgencyName: String?
     var callNum: String?
     var openTime: String?
-    var openDate: Date?
+    var openDate: String? // Date 타입 반환 계산 프로퍼티 있음
     var latitude: Double?
     var longitude: Double?
     var owner: String?
     var locatedPlace: String?
     var disposalMethod: String?
-    var hasEmergencyBell: Bool?
+    var hasEmergencyBell: String? // Bool 타입 반환 계산 프로퍼티 있음
     var emergencyBellLocation: String?
-    var hasCCTV: Bool?
-    var hasDiaperTable: Bool?
+    var hasCCTV: String? // Bool 타입 반환 계산 프로퍼티 있음
+    var hasDiaperTable: String? // Bool 타입 반환 계산 프로퍼티 있음
     var diaperLocation: String?
-    var remodelingDate: Date?
-    var date: Date?
+    var remodelingDate: String? // Date 타입 반환 계산 프로퍼티 있음
+    var date: String? // Date 타입 반환 계산 프로퍼티 있음
+
+    // MARK: - Date 값으로 반환하는 계산 프로퍼티
+    var openDateToDate: Date? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM"
+        
+        guard let openDate = openDate else {
+            return nil
+        }
+        if let openDate = dateFormatter.date(from: openDate) {
+            return openDate
+        } else {
+            return nil
+        }
+    }
+    var remodelingDateToDate: Date? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM"
+        
+        guard let remodelingDate = remodelingDate else {
+            return nil
+        }
+        if let remodelingDate = dateFormatter.date(from: remodelingDate) {
+            return remodelingDate
+        } else {
+            return nil
+        }
+    }
+    var dateToDate: Date? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-DD"
+        
+        guard let date = date else {
+            return nil
+        }
+        if let date = dateFormatter.date(from: date) {
+            return date
+        } else {
+            return nil
+        }
+    }
+
+    // MARK: - Bool 값으로 반환하는 계산 프로퍼티
+    var hasEmergencyBellToBool: Bool {
+        if let hasEmergencyBell = hasEmergencyBell, hasEmergencyBell == "N" {
+            return false
+        } else {
+            return true
+        }
+    }
+    var hasCCTVToBool: Bool {
+        if let hasCCTV = hasCCTV, hasCCTV == "N" {
+            return false
+        } else {
+            return true
+        }
+    }
+    var hasDiaperTableToBool: Bool {
+        if let hasDiaperTable = hasDiaperTable, hasDiaperTable == "N" {
+            return false
+        } else {
+            return true
+        }
+    }
 }
