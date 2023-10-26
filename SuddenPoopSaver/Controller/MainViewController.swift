@@ -8,6 +8,8 @@
 import UIKit
 import MapKit
 
+import SnapKit
+
 final class MainViewController: UIViewController {
 
     private let mainView = MainView()
@@ -22,12 +24,9 @@ final class MainViewController: UIViewController {
 //        self.view.backgroundColor = .brown
         self.view.addSubview(mainView)
         mainView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            mainView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
-            mainView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor),
-            mainView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
-            mainView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor)
-        ])
+        mainView.snp.makeConstraints { make in
+            make.edges.equalTo(self.view.safeAreaLayoutGuide)
+        }
         
         mainView.mapView.showsUserLocation = true // 사용자의 현재 위치 표시 활성화
     }
