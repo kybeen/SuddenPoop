@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		B80099BD2AE837F80053C547 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80099BC2AE837F80053C547 /* MainView.swift */; };
 		B80099C12AE897C90053C547 /* Toilet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80099C02AE897C90053C547 /* Toilet.swift */; };
-		B80099C32AE898760053C547 /* NationWideToilet.csv in Resources */ = {isa = PBXBuildFile; fileRef = B80099C22AE898760053C547 /* NationWideToilet.csv */; };
+		B80099D12AEA3B7E0053C547 /* NationWideToilet.csv in Resources */ = {isa = PBXBuildFile; fileRef = B80099D02AEA3B7E0053C547 /* NationWideToilet.csv */; };
 		B889EF9B2AE8324100F0E3DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B889EF9A2AE8324100F0E3DC /* AppDelegate.swift */; };
 		B889EF9D2AE8324100F0E3DC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B889EF9C2AE8324100F0E3DC /* SceneDelegate.swift */; };
 		B889EFA42AE8324200F0E3DC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B889EFA32AE8324200F0E3DC /* Assets.xcassets */; };
@@ -19,7 +19,7 @@
 /* Begin PBXFileReference section */
 		B80099BC2AE837F80053C547 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		B80099C02AE897C90053C547 /* Toilet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toilet.swift; sourceTree = "<group>"; };
-		B80099C22AE898760053C547 /* NationWideToilet.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NationWideToilet.csv; sourceTree = "<group>"; };
+		B80099D02AEA3B7E0053C547 /* NationWideToilet.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NationWideToilet.csv; sourceTree = "<group>"; };
 		B889EF972AE8324100F0E3DC /* SuddenPoopSaver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SuddenPoopSaver.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B889EF9A2AE8324100F0E3DC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B889EF9C2AE8324100F0E3DC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -42,7 +42,7 @@
 		B80099B82AE8375A0053C547 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				B80099C22AE898760053C547 /* NationWideToilet.csv */,
+				B80099D02AEA3B7E0053C547 /* NationWideToilet.csv */,
 				B80099C02AE897C90053C547 /* Toilet.swift */,
 			);
 			path = Model;
@@ -153,7 +153,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B889EFA42AE8324200F0E3DC /* Assets.xcassets in Resources */,
-				B80099C32AE898760053C547 /* NationWideToilet.csv in Resources */,
+				B80099D12AEA3B7E0053C547 /* NationWideToilet.csv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
