@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import MapKit
 
 final class MainViewController: UIViewController {
 
@@ -16,9 +17,9 @@ final class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         loadToiletsFromCSV()
-//        print("nationWideToilet: \(nationWideToilet)")
+        setCenterLocation()
 
-        self.view.backgroundColor = .brown
+//        self.view.backgroundColor = .brown
         self.view.addSubview(mainView)
         mainView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -27,6 +28,22 @@ final class MainViewController: UIViewController {
             mainView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
             mainView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor)
         ])
+        
+        mainView.mapView.showsUserLocation = true // 사용자의 현재 위치 표시 활성화
+    }
+
+    // MARK: - 지도의 중심 좌표 설정
+    private func setCenterLocation() {
+        let initialLocation = CLLocation(latitude: 37.7749, longitude: -122.4194)
+        let regionRadius: CLLocationDistance = 1000 // 표시할 지도 영역의 반경 (미터)
+        
+        let coordinateRegion = MKCoordinateRegion(
+            center: initialLocation.coordinate,
+            latitudinalMeters: regionRadius,
+            longitudinalMeters: regionRadius
+        )
+
+        mainView.mapView.setRegion(coordinateRegion, animated: true)
     }
 
     // MARK: - CSV 파일을 파싱하는 메서드
@@ -128,3 +145,20 @@ final class MainViewController: UIViewController {
     }
 }
 
+// MARK: - Preview canvas 세팅
+import SwiftUI
+
+struct MainViewControllerRepresentable: UIViewControllerRepresentable {
+    typealias UIViewControllerType = MainViewController
+    func makeUIViewController(context: Context) -> MainViewController {
+        return MainViewController()
+    }
+    func updateUIViewController(_ uiViewController: MainViewController, context: Context) {
+    }
+}
+@available(iOS 13.0.0, *)
+struct MainViewPreview: PreviewProvider {
+    static var previews: some View {
+        MainViewControllerRepresentable()
+    }
+}
