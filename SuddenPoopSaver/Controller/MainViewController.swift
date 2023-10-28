@@ -5,6 +5,7 @@
 //  Created by 김영빈 on 2023/10/25.
 //
 
+import CoreLocation
 import UIKit
 import MapKit
 
@@ -12,16 +13,20 @@ import SnapKit
 
 final class MainViewController: UIViewController {
 
-    private let mainView = MainView()
+    // 앱에서 위치 관련 이벤트를 다룰 때 사용하는 객체
+    var locationManager: CLLocationManager!
 
+    private let mainView = MainView()
     var nationWideToilet = [Toilet]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadToiletsFromCSV()
-        setCenterLocation()
+        locationManager = CLLocationManager()
+        locationManager.delegate = self
+        locationManager.requestWhenInUseAuthorization()
 
-//        self.view.backgroundColor = .brown
+        loadToiletsFromCSV()
+
         self.view.addSubview(mainView)
         mainView.translatesAutoresizingMaskIntoConstraints = false
         mainView.snp.makeConstraints { make in
@@ -32,17 +37,21 @@ final class MainViewController: UIViewController {
     }
 
     // MARK: - 지도의 중심 좌표 설정
-    private func setCenterLocation() {
-        let initialLocation = CLLocation(latitude: 37.7749, longitude: -122.4194)
-        let regionRadius: CLLocationDistance = 1000 // 표시할 지도 영역의 반경 (미터)
-        
-        let coordinateRegion = MKCoordinateRegion(
-            center: initialLocation.coordinate,
-            latitudinalMeters: regionRadius,
-            longitudinalMeters: regionRadius
+    private func setCenterLocation(center: CLLocationCoordinate2D) {
+//        let center = CLLocationCoordinate2D(
+//            latitude: 37.7449,
+//            longitude: -122.4194
+//        )
+        let regionMeter: CLLocationDistance = 500 // 표시항 지도의 영역 반경(미터)
+//        guard let center = center else { return }
+        let region = MKCoordinateRegion(
+            center: center,
+            latitudinalMeters: regionMeter,
+            longitudinalMeters: regionMeter
         )
-
-        mainView.mapView.setRegion(coordinateRegion, animated: true)
+        mainView.mapView.setRegion(region, animated: true)
+        print("센터: \(center)")
+        
     }
 
     // MARK: - CSV 파일을 파싱하는 메서드
@@ -63,7 +72,7 @@ final class MainViewController: UIViewController {
                         if char == "," && !insideFieldActive {
                             fields.append(insideField)
                             insideField = ""
-                        } else if char == "\"" {
+                        } else if char == "\"" { // ""로 둘러싸인 값을 감지하고, 그 안에 있는 ,는 구분자로 인식하지 않도록 하기 위한 처리
                             insideFieldActive.toggle()
                         } else {
                             insideField.append(char)
@@ -80,21 +89,6 @@ final class MainViewController: UIViewController {
         } catch {
             print("CSV 파일을 읽는 도중 에러가 발생했습니다!!")
         }
-//        do {
-//            let data = try Data(contentsOf: url)
-//            let dataEncoded = String(data: data, encoding: .utf8)
-//
-//            if let dataArr = dataEncoded?.components(separatedBy: "\n").map({ $0.components(separatedBy: ",") }) {
-//                for i in 1..<dataArr.count {
-//                    nationWideToilet.append(dataArr[i])
-//                    if dataArr[i].count > 31 {
-//                        print("\(i)번 인덱스 | 길이: \(dataArr[i].count)")
-//                    }
-//                }
-//            }
-//        } catch {
-//            print("CVS 파일을 읽는 도중 에러가 발생했습니다!!")
-//        }
     }
 
     // MARK: - 화장실 불러오기
@@ -142,22 +136,101 @@ final class MainViewController: UIViewController {
         )
         return toilet
     }
+
+    // MARK: - 위치 권한 확인
+    func checkUserDeviceLoactionServiceAuthorization() {
+        // 디바이즈 자체에 위치 서비스가 활성화 상태인지 확인
+        guard CLLocationManager.locationServicesEnabled() else {
+            // 시스템 설정으로 유도하는 커스텀 알럿
+            showRequestLocationServiceSettingAlert()
+            return
+        }
+        
+        // 앱에 대한 권한 상태 확인
+        let authorizationStatus: CLAuthorizationStatus
+        // 앱의 권한 상태 가져오기
+        if #available(iOS 14.0, *) {
+            authorizationStatus = locationManager.authorizationStatus
+        } else {
+            authorizationStatus = CLLocationManager.authorizationStatus()
+        }
+        
+        // 권한 상태값에 따라 분기처리를 수행하는 메서드 실행
+        checkUserCurrentLocationAuthorization(authorizationStatus)
+    }
+    
+    // MARK: - 앱에 대한 위치 권한이 부여된 상태인지 확인하는 메서드
+    func checkUserCurrentLocationAuthorization(_ status: CLAuthorizationStatus) {
+        switch status {
+        case .notDetermined:
+            // 사용자가 권한에 대한 설정을 선택하지 않은 상태
+            
+            // 권한 요청을 보내기 전에 desiredAccuracy 설정 필요
+            locationManager.desiredAccuracy = kCLLocationAccuracyBest
+            
+            // 권한 요청을 보낸다.
+            locationManager.requestWhenInUseAuthorization()
+        case .denied, .restricted:
+            // 사용자가 명시적으로 권한을 거부했거나, 위치 서비스 활성화가 제한된 상태
+            // 시스템 설정에서 설정값을 변경하도록 유도한다.
+            // 시스템 설정으로 유도하는 커스텀 알럿
+            showRequestLocationServiceSettingAlert()
+        case .authorizedWhenInUse, .authorizedAlways:
+            // 앱을 사용중일 때 혹은 항상 위치 서비스를 이용할 수 있는 상태
+            // manager 인스턴스를 사용하여 사용자의 위치를 가져온다.
+            locationManager.startUpdatingLocation()
+        default:
+            print("Default")
+        }
+    }
+    
+    // MARK: - 디바이스의 시스템 설정으로 유도하는 커스텀 알럿
+    func showRequestLocationServiceSettingAlert() {
+        let requestLocationServiceSettingAlert = UIAlertController(
+            title: "위치 정보 이용 설정 필요",
+            message: "위치 서비스를 사용할 수 없습니다.\n디바이스의 '설정 👉 개인정보 보호'에서 위치 서비스를 활성화해주세요.",
+            preferredStyle: .alert
+        )
+        let goToSetting = UIAlertAction(title: "설정으로 이동", style: .destructive) { _ in
+            if let appSetting = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(appSetting)
+            }
+        }
+        let cancel = UIAlertAction(title: "취소", style: .default)
+        requestLocationServiceSettingAlert.addAction(cancel)
+        requestLocationServiceSettingAlert.addAction(goToSetting)
+        present(requestLocationServiceSettingAlert, animated: true)
+    }
 }
 
-// MARK: - Preview canvas 세팅
-import SwiftUI
-
-struct MainViewControllerRepresentable: UIViewControllerRepresentable {
-    typealias UIViewControllerType = MainViewController
-    func makeUIViewController(context: Context) -> MainViewController {
-        return MainViewController()
+// MARK: - CLLocationManagerDelegate 델리게이트 구현
+extension MainViewController: CLLocationManagerDelegate {
+    // 사용자의 위치를 성공적으로 가져왔을 때 호출
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        // 위치 정보를 배열로 입력받는다. → 마지막 index 값이 가장 정확
+        if let coordinate = locations.last?.coordinate {
+            // 사용자 위치 정보 사용
+            setCenterLocation(center: coordinate)
+        }
+        
+        // startUpdatingLocation()을 사용하여 사용자 위치를 가져왔을 때 불필요한 업데이트를 방지하기 위해 호출
+        locationManager.stopUpdatingLocation()
     }
-    func updateUIViewController(_ uiViewController: MainViewController, context: Context) {
+    
+    // 사용자가 GPS 사용이 불가한 지역에 있는 등 위치 정보를 가져오지 못했을 때 호출
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print(#function)
     }
-}
-@available(iOS 13.0.0, *)
-struct MainViewPreview: PreviewProvider {
-    static var previews: some View {
-        MainViewControllerRepresentable()
+    
+    // 앱에 대한 권한 설정이 변경되면 호출 (iOS 14 이상)
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        // 사용자 디바이스의 위치 서비스가 활성화 상태인지 확인하는 메서드 호출
+        checkUserDeviceLoactionServiceAuthorization()
+    }
+    
+    // 앱에 대한 권한 설정이 변경되면 호출 (iOS 14 미만)
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        // 사용자 디바이스의 위치 서비스가 활성화 상태인지 확인하는 메서드 호출
+        checkUserDeviceLoactionServiceAuthorization()
     }
 }
