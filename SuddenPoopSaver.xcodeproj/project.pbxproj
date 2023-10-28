@@ -15,6 +15,7 @@
 		B889EF9D2AE8324100F0E3DC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B889EF9C2AE8324100F0E3DC /* SceneDelegate.swift */; };
 		B889EFA42AE8324200F0E3DC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B889EFA32AE8324200F0E3DC /* Assets.xcassets */; };
 		B889EFAF2AE832BD00F0E3DC /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B889EFAE2AE832BD00F0E3DC /* MainViewController.swift */; };
+		B8EFE74D2AED8D9E00C0E0F9 /* CustomAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8EFE74C2AED8D9E00C0E0F9 /* CustomAnnotation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -40,6 +41,7 @@
 		B889EFA32AE8324200F0E3DC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B889EFA82AE8324200F0E3DC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B889EFAE2AE832BD00F0E3DC /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		B8EFE74C2AED8D9E00C0E0F9 /* CustomAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAnnotation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +108,7 @@
 		B889EF992AE8324100F0E3DC /* SuddenPoopSaver */ = {
 			isa = PBXGroup;
 			children = (
+				B8EFE74B2AED8D9100C0E0F9 /* Utils */,
 				B80099BB2AE837B50053C547 /* Controller */,
 				B80099BA2AE837AD0053C547 /* View */,
 				B80099B82AE8375A0053C547 /* Model */,
@@ -115,6 +118,14 @@
 				B889EFA82AE8324200F0E3DC /* Info.plist */,
 			);
 			path = SuddenPoopSaver;
+			sourceTree = "<group>";
+		};
+		B8EFE74B2AED8D9100C0E0F9 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				B8EFE74C2AED8D9E00C0E0F9 /* CustomAnnotation.swift */,
+			);
+			path = Utils;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -199,6 +210,7 @@
 				B889EF9B2AE8324100F0E3DC /* AppDelegate.swift in Sources */,
 				B889EF9D2AE8324100F0E3DC /* SceneDelegate.swift in Sources */,
 				B80099C12AE897C90053C547 /* Toilet.swift in Sources */,
+				B8EFE74D2AED8D9E00C0E0F9 /* CustomAnnotation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
