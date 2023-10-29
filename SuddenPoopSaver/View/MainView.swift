@@ -16,9 +16,11 @@ final class MainView: UIView {
 //        mapView.preferredConfiguration = MKImageryMapConfiguration() // 위성 지도
 //        mapView.preferredConfiguration = MKHybridMapConfiguration() // 위성 + 지역 정보
         
-//        mapView.showsCompass = true // 나침판 표시
-//        mapView.showsScale = true // 축척 정보 표시
-    
+        mapView.showsCompass = true // 나침판 표시
+        mapView.showsScale = true // 축척 정보 표시
+        
+        mapView.showsUserLocation = true // 사용자의 현재 위치 표시 활성화
+        mapView.setUserTrackingMode(.follow, animated: true)
         return mapView
     }()
 

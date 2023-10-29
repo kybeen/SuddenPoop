@@ -21,11 +21,12 @@ final class MainViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        // CoreLocation & MapKit 관련 세팅
         locationManager = CLLocationManager()
         locationManager.delegate = self
-        locationManager.requestWhenInUseAuthorization()
         mainView.mapView.delegate = self
 
+        // 화장실 데이터 불러오고 지도에 표시
         loadToiletsFromCSV()
         setAnnotation(toilets: nationWideToilet)
 
@@ -34,14 +35,11 @@ final class MainViewController: UIViewController {
         mainView.snp.makeConstraints { make in
             make.edges.equalTo(self.view.safeAreaLayoutGuide)
         }
-        
-        mainView.mapView.showsUserLocation = true // 사용자의 현재 위치 표시 활성화
-        mainView.mapView.setUserTrackingMode(.follow, animated: true)
     }
 
     // MARK: - 위치 권한 확인
     func checkUserDeviceLoactionServiceAuthorization() {
-        // 디바이즈 자체에 위치 서비스가 활성화 상태인지 확인
+        // 디바이스 자체에 위치 서비스가 활성화 상태인지 확인
         guard CLLocationManager.locationServicesEnabled() else {
             // 시스템 설정으로 유도하는 커스텀 알럿
             showRequestLocationServiceSettingAlert()
@@ -51,34 +49,42 @@ final class MainViewController: UIViewController {
         // 앱에 대한 권한 상태 확인
         let authorizationStatus: CLAuthorizationStatus
         // 앱의 권한 상태 가져오기
-        if #available(iOS 14.0, *) {
-            authorizationStatus = locationManager.authorizationStatus
-        } else {
-            authorizationStatus = CLLocationManager.authorizationStatus()
-        }
-        
+        authorizationStatus = locationManager.authorizationStatus
+//        if #available(iOS 14.0, *) {
+//            authorizationStatus = locationManager.authorizationStatus
+//        } else {
+//            authorizationStatus = CLLocationManager.authorizationStatus()
+//        }
+
         // 권한 상태값에 따라 분기처리를 수행하는 메서드 실행
-        checkUserCurrentLocationAuthorization(authorizationStatus)
+        checkUserCurrentLocationAuthorization(status: authorizationStatus)
     }
     
     // MARK: - 앱에 대한 위치 권한이 부여된 상태인지 확인하는 메서드
-    func checkUserCurrentLocationAuthorization(_ status: CLAuthorizationStatus) {
+    /**
+     CLAuthorizationStatus(권한 상태에 대한 enum)
+     - ✅ .notDetermined : 사용자가 권한에 대한 설정을 선택하지 않은 상태
+     - ✅ .restricted : 위치 서비스에 대한 권한이 없는 상태 / 자녀 보호 기능 등의 요인으로 디바이스 자체에 활성이 제한되어 있는 상태
+     - ✅ .denied
+        - 사용자가 앱에 대한 권한을 거부한 상태
+        - 권한을 승인했지만 추후에 시스템 설정에서 비활성화한 경우
+        - 사용자가 디바이스 전체에 대해 위치 서비스를 비활성화한 경우
+        - 비행기 모드 등의 상황으로, 위치 서비스를 이용할 수 없는 상황
+     - ✅ .authorizedAlways : 앱이 백그라운드 상태에서도 위치 서비스를 이용할 수 있도록 승인된 상태
+     - ✅ .authorizedWhenInUse : 앱이 포어그라운드 상태에서만 위치 서비스를 이용할 수 있도록 승인된 상태 (앱을 사용 중일 때만)
+     */
+    func checkUserCurrentLocationAuthorization(status: CLAuthorizationStatus) {
         switch status {
         case .notDetermined:
-            // 사용자가 권한에 대한 설정을 선택하지 않은 상태
-            
-            // 권한 요청을 보내기 전에 desiredAccuracy 설정 필요
-            locationManager.desiredAccuracy = kCLLocationAccuracyBest
-            
+            // 권한 요청을 보내기 전에 desiredAccuracy 설정이 필요함 - 정확할수록 배터리 소모 UP
+            // TODO: 추후 유저가 설정 가능하도록 하기
+            locationManager.desiredAccuracy = kCLLocationAccuracyBest // 가능한 최고 수준의 정확도로 사용
             // 권한 요청을 보낸다.
             locationManager.requestWhenInUseAuthorization()
         case .denied, .restricted:
-            // 사용자가 명시적으로 권한을 거부했거나, 위치 서비스 활성화가 제한된 상태
             // 시스템 설정에서 설정값을 변경하도록 유도한다.
-            // 시스템 설정으로 유도하는 커스텀 알럿
             showRequestLocationServiceSettingAlert()
         case .authorizedWhenInUse, .authorizedAlways:
-            // 앱을 사용중일 때 혹은 항상 위치 서비스를 이용할 수 있는 상태
             // manager 인스턴스를 사용하여 사용자의 위치를 가져온다.
             locationManager.startUpdatingLocation()
         default:
@@ -106,7 +112,7 @@ final class MainViewController: UIViewController {
 
     // MARK: - 지도의 중심 좌표 설정
     private func setCenterLocation(center: CLLocationCoordinate2D) {
-        let regionMeter: CLLocationDistance = 1000 // 표시할 지도의 영역 반경(미터)
+        let regionMeter: CLLocationDistance = 3000 // 표시할 지도의 영역 반경(미터)
         let region = MKCoordinateRegion(
             center: center,
             latitudinalMeters: regionMeter,
@@ -146,13 +152,21 @@ final class MainViewController: UIViewController {
     }
 }
 
-// MARK: - 화장실 데이터 관련 메서드
+// MARK: - 화장실 데이터 불러오기 관련 메서드
 extension MainViewController {
+
+    // MARK: - 화장실 데이터 불러오기
+    private func loadToiletsFromCSV() {
+        print("loadToiletsFromCSV()...")
+        let path = Bundle.main.path(forResource: "NationWideToilet", ofType: "csv")!
+        print(path)
+
+        parseCSV(url: URL(fileURLWithPath: path))
+    }
     
     // MARK: - CSV 파일을 파싱하는 메서드
     private func parseCSV(url: URL) {
         print("parseCSV()...")
-        
         do {
             let data = try Data(contentsOf: url)
             if let dataEncoded = String(data: data, encoding: .utf8) {
@@ -178,21 +192,13 @@ extension MainViewController {
                     if fields.count > 31 {
                         print("길이: \(fields.count)")
                     }
+                    // nationWideToilet 배열에 Toilet 인스턴스들을 추가해준다.
                     nationWideToilet.append(convertToToilet(toiletArr: fields))
                 }
             }
         } catch {
             print("CSV 파일을 읽는 도중 에러가 발생했습니다!!")
         }
-    }
-
-    // MARK: - 화장실 불러오기
-    private func loadToiletsFromCSV() {
-        print("loadToiletsFromCSV()...")
-        let path = Bundle.main.path(forResource: "NationWideToilet", ofType: "csv")!
-        print(path)
-
-        parseCSV(url: URL(fileURLWithPath: path))
     }
 
     // MARK: - Toilet 인스턴스로 변환
@@ -240,12 +246,12 @@ extension MainViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         // 위치 정보를 배열로 입력받는다. → 마지막 index 값이 가장 정확
         if let coordinate = locations.last?.coordinate {
-            // 사용자 위치 정보 사용
+            // 사용자 위치 정보를 지도의 중심으로 위치시켜준다.
             setCenterLocation(center: coordinate)
-            print("사용자 위치: \(coordinate)")
         }
         
         // startUpdatingLocation()을 사용하여 사용자 위치를 가져왔을 때 불필요한 업데이트를 방지하기 위해 호출
+        // TODO: - 이 자리에 둬도 되나? 확인 필요함
         locationManager.stopUpdatingLocation()
     }
     
@@ -259,12 +265,11 @@ extension MainViewController: CLLocationManagerDelegate {
         // 사용자 디바이스의 위치 서비스가 활성화 상태인지 확인하는 메서드 호출
         checkUserDeviceLoactionServiceAuthorization()
     }
-    
-    // 앱에 대한 권한 설정이 변경되면 호출 (iOS 14 미만)
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        // 사용자 디바이스의 위치 서비스가 활성화 상태인지 확인하는 메서드 호출
-        checkUserDeviceLoactionServiceAuthorization()
-    }
+//    // 앱에 대한 권한 설정이 변경되면 호출 (iOS 14 미만)
+//    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+//        // 사용자 디바이스의 위치 서비스가 활성화 상태인지 확인하는 메서드 호출
+//        checkUserDeviceLoactionServiceAuthorization()
+//    }
 }
 
 // MARK: MKMapViewDelegate 델리게이트 구현
@@ -272,12 +277,20 @@ extension MainViewController: MKMapViewDelegate {
 
     // AnnotationView를 커스터마이징
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        if annotation is MKUserLocation {
-            return nil
+        guard !(annotation is MKUserLocation) else { return nil }
+        
+        var annotationView = mainView.mapView.dequeueReusableAnnotationView(withIdentifier: CustomAnnotation.identifier)
+        if annotationView == nil {
+            annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: CustomAnnotation.identifier)
+            
+            annotationView?.canShowCallout = true // 어노테이션 클릭 시 콜아웃(팝업) 표시
+            annotationView?.image = UIImage(systemName: "toilet.circle.fill")
+            
+            let button = UIButton(type: .detailDisclosure)
+            annotationView?.rightCalloutAccessoryView = button
         }
         
-        let annotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "customAnnotation")
-        annotationView.canShowCallout = true // 어노테이션 클릭 시 콜아웃(팝업) 표시
+//        let annotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: CustomAnnotation.identifier)
         return annotationView
     }
     

@@ -9,6 +9,8 @@ import UIKit
 import MapKit
 
 final class CustomAnnotation: NSObject, MKAnnotation {
+    static let identifier = "CustomAnnotation"
+    
     var title: String?
     var subtitle: String?
     @objc dynamic var coordinate: CLLocationCoordinate2D
