@@ -29,6 +29,7 @@ final class MainMapViewController: UIViewController {
         mainMapView.mapView.delegate = self
 //        mainMapView.mapView.register(MKAnnotationView.self, forAnnotationViewWithReuseIdentifier: ToiletAnnotation.identifier)
         mainMapView.mapView.register(ToiletAnnotationView.self, forAnnotationViewWithReuseIdentifier: ToiletAnnotationView.identifier) // 클러스터링 하려면 커스텀 어노테이션 뷰를 사용해야 함
+        mainMapView.mapView.register(ClusterAnnotationView.self, forAnnotationViewWithReuseIdentifier: ClusterAnnotationView.identifier)
 
         // 화장실 데이터 불러오고 지도에 표시
         loadToiletsFromCSV()
@@ -279,11 +280,11 @@ extension MainMapViewController: MKMapViewDelegate {
     
     // AnnotationView를 커스터마이징
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-//        // 현재 유저의 위치를 표시해주는 동그라미도 어노테이션에 해당하기 때문에 이 처리가 돼있지 않으면 유저 위치 어노테이션이 보이지 않는다.
-//        guard !annotation.isKind(of: MKUserLocation.self) else {
-//            // Make a fast exit if the annotation is the `MKUserLocation`, as it's not an annotation view we wish to customize.
-//            return nil
-//        }
+        // 현재 유저의 위치를 표시해주는 동그라미도 어노테이션에 해당하기 때문에 이 처리가 돼있지 않으면 유저 위치 어노테이션이 보이지 않는다.
+        guard !annotation.isKind(of: MKUserLocation.self) else {
+            // Make a fast exit if the annotation is the `MKUserLocation`, as it's not an annotation view we wish to customize.
+            return nil
+        }
 //        
 //        var annotationView: MKAnnotationView?
 //        
@@ -293,10 +294,16 @@ extension MainMapViewController: MKMapViewDelegate {
 //        
 //        return annotationView
         
-        guard let annotation = annotation as? ToiletAnnotation else {
-            return nil
+        switch annotation {
+        case is MKClusterAnnotation:
+            return ClusterAnnotationView(annotation: annotation, reuseIdentifier: ClusterAnnotationView.identifier)
+        default:
+            return ToiletAnnotationView(annotation: annotation, reuseIdentifier: ToiletAnnotationView.identifier)
         }
-        return ToiletAnnotationView(annotation: annotation, reuseIdentifier: ToiletAnnotationView.identifier)
+//        guard let annotation = annotation as? ToiletAnnotation else {
+//            return nil
+//        }
+//        return ToiletAnnotationView(annotation: annotation, reuseIdentifier: ToiletAnnotationView.identifier)
     }
 
 //    // 재사용 식별자를 사용해서 AnnotationView 생성

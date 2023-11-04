@@ -12,6 +12,7 @@
 		B8009A0E2AED7F8D0053C547 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = B8009A0D2AED7F8D0053C547 /* SnapKit */; };
 		B832858A2AEE88F0004C173A /* NationWideToilet.csv in Resources */ = {isa = PBXBuildFile; fileRef = B83285892AEE88F0004C173A /* NationWideToilet.csv */; };
 		B8376E332AF68566007F1E0A /* ToiletAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8376E322AF68566007F1E0A /* ToiletAnnotationView.swift */; };
+		B8376E352AF6CD79007F1E0A /* ClusterAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8376E342AF6CD79007F1E0A /* ClusterAnnotationView.swift */; };
 		B889EF9B2AE8324100F0E3DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B889EF9A2AE8324100F0E3DC /* AppDelegate.swift */; };
 		B889EF9D2AE8324100F0E3DC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B889EF9C2AE8324100F0E3DC /* SceneDelegate.swift */; };
 		B889EFA42AE8324200F0E3DC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B889EFA32AE8324200F0E3DC /* Assets.xcassets */; };
@@ -37,6 +38,7 @@
 		B80099C02AE897C90053C547 /* Toilet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toilet.swift; sourceTree = "<group>"; };
 		B83285892AEE88F0004C173A /* NationWideToilet.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NationWideToilet.csv; sourceTree = "<group>"; };
 		B8376E322AF68566007F1E0A /* ToiletAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToiletAnnotationView.swift; sourceTree = "<group>"; };
+		B8376E342AF6CD79007F1E0A /* ClusterAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterAnnotationView.swift; sourceTree = "<group>"; };
 		B889EF972AE8324100F0E3DC /* SuddenPoopSaver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SuddenPoopSaver.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B889EF9A2AE8324100F0E3DC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B889EF9C2AE8324100F0E3DC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -127,6 +129,7 @@
 			children = (
 				B8EFE74C2AED8D9E00C0E0F9 /* ToiletAnnotation.swift */,
 				B8376E322AF68566007F1E0A /* ToiletAnnotationView.swift */,
+				B8376E342AF6CD79007F1E0A /* ClusterAnnotationView.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -214,6 +217,7 @@
 				B889EF9B2AE8324100F0E3DC /* AppDelegate.swift in Sources */,
 				B889EF9D2AE8324100F0E3DC /* SceneDelegate.swift in Sources */,
 				B80099C12AE897C90053C547 /* Toilet.swift in Sources */,
+				B8376E352AF6CD79007F1E0A /* ClusterAnnotationView.swift in Sources */,
 				B8EFE74D2AED8D9E00C0E0F9 /* ToiletAnnotation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
