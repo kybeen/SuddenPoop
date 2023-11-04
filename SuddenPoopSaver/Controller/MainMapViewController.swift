@@ -1,5 +1,5 @@
 //
-//  MainViewController.swift
+//  MainMapViewController.swift
 //  SuddenPoopSaver
 //
 //  Created by 김영빈 on 2023/10/25.
@@ -11,28 +11,32 @@ import MapKit
 
 import SnapKit
 
-final class MainViewController: UIViewController {
+final class MainMapViewController: UIViewController {
 
     // 앱에서 위치 관련 이벤트를 다룰 때 사용하는 객체
     var locationManager: CLLocationManager!
+    let regionMeter: CLLocationDistance = 3000 // 표시할 지도의 영역 반경(미터)
 
-    private let mainView = MainView()
-    var nationWideToilet = [Toilet]()
+    private let mainMapView = MainMapView()
+    var nationWideToilet = [Toilet]() // 화장실 데이터
+    var annotations = [MKAnnotation]() // 화장실 어노테이션
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // CoreLocation & MapKit 관련 세팅
         locationManager = CLLocationManager()
         locationManager.delegate = self
-        mainView.mapView.delegate = self
+        mainMapView.mapView.delegate = self
+//        mainMapView.mapView.register(MKAnnotationView.self, forAnnotationViewWithReuseIdentifier: ToiletAnnotation.identifier)
+        mainMapView.mapView.register(ToiletAnnotationView.self, forAnnotationViewWithReuseIdentifier: ToiletAnnotationView.identifier) // 클러스터링 하려면 커스텀 어노테이션 뷰를 사용해야 함
 
         // 화장실 데이터 불러오고 지도에 표시
         loadToiletsFromCSV()
-        setAnnotation(toilets: nationWideToilet)
+        setToiletAnnotation(toilets: nationWideToilet)
 
-        self.view.addSubview(mainView)
-        mainView.translatesAutoresizingMaskIntoConstraints = false
-        mainView.snp.makeConstraints { make in
+        self.view.addSubview(mainMapView)
+        mainMapView.translatesAutoresizingMaskIntoConstraints = false
+        mainMapView.snp.makeConstraints { make in
             make.edges.equalTo(self.view.safeAreaLayoutGuide)
         }
     }
@@ -112,20 +116,18 @@ final class MainViewController: UIViewController {
 
     // MARK: - 지도의 중심 좌표 설정
     private func setCenterLocation(center: CLLocationCoordinate2D) {
-        let regionMeter: CLLocationDistance = 3000 // 표시할 지도의 영역 반경(미터)
         let region = MKCoordinateRegion(
             center: center,
             latitudinalMeters: regionMeter,
             longitudinalMeters: regionMeter
         )
-        mainView.mapView.setRegion(region, animated: true)
+        mainMapView.mapView.setRegion(region, animated: true)
     }
 
     // 지도 Annotation 생성 메서드
-    func setAnnotation(toilets: [Toilet]) {
-        var annotations = [MKAnnotation]()
+    func setToiletAnnotation(toilets: [Toilet]) {
         for toilet in toilets {
-            let annotataion = CustomAnnotation(
+            let annotataion = ToiletAnnotation(
                 title: toilet.name ?? "이름 불러오지 못함",
                 subtitle: toilet.streetNameAddr ?? "주소 불러오지 못함",
                 coordinate: CLLocationCoordinate2D(
@@ -133,27 +135,16 @@ final class MainViewController: UIViewController {
                     longitude: toilet.longitude ?? 0
                 )
             )
+            annotataion.imageName = "toilet.circle.fill"
+            
             annotations.append(annotataion)
         }
-        mainView.mapView.addAnnotations(annotations)
-        
-        
-//        let annotataion = MKPointAnnotation()
-        
-//        if let center = center {
-//            annotataion.coordinate = center
-//        } else {
-//            annotataion.coordinate = CLLocationCoordinate2D(latitude: 36.017512842322766, longitude: 129.321726908621)
-//        }
-//        annotataion.title = "이름"
-//        annotataion.subtitle = "서브타이틀"
-        
-//        mainView.mapView.addAnnotation(annotataion)
+        mainMapView.mapView.addAnnotations(annotations)
     }
 }
 
 // MARK: - 화장실 데이터 불러오기 관련 메서드
-extension MainViewController {
+extension MainMapViewController {
 
     // MARK: - 화장실 데이터 불러오기
     private func loadToiletsFromCSV() {
@@ -240,7 +231,7 @@ extension MainViewController {
 }
 
 // MARK: - CLLocationManagerDelegate 델리게이트 구현
-extension MainViewController: CLLocationManagerDelegate {
+extension MainMapViewController: CLLocationManagerDelegate {
 
     // 사용자의 위치를 성공적으로 가져왔을 때 호출
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -273,26 +264,64 @@ extension MainViewController: CLLocationManagerDelegate {
 }
 
 // MARK: MKMapViewDelegate 델리게이트 구현
-extension MainViewController: MKMapViewDelegate {
-
+extension MainMapViewController: MKMapViewDelegate {
+    
+    // 지도를 스크롤 및 확대할 때 호출되는 메서드 👉 지도 영역이 변경될 때
+    // ex) 특정 영역을 확대했을 때, 해당 지역의 정보를 갖고올 떄 등...
+    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        print("지도 위치 변경!!")
+    }
+    
+    // 사용자 위치가 업데이트 될 때 호출되는 메서드
+    func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
+        print("사용자 위치 업데이트!!")
+    }
+    
     // AnnotationView를 커스터마이징
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        guard !(annotation is MKUserLocation) else { return nil }
+//        // 현재 유저의 위치를 표시해주는 동그라미도 어노테이션에 해당하기 때문에 이 처리가 돼있지 않으면 유저 위치 어노테이션이 보이지 않는다.
+//        guard !annotation.isKind(of: MKUserLocation.self) else {
+//            // Make a fast exit if the annotation is the `MKUserLocation`, as it's not an annotation view we wish to customize.
+//            return nil
+//        }
+//        
+//        var annotationView: MKAnnotationView?
+//        
+//        if let annotation = annotation as? ToiletAnnotation {
+//            annotationView = setToiletAnnotationView(for: annotation, on: mapView)
+//        }
+//        
+//        return annotationView
         
-        var annotationView = mainView.mapView.dequeueReusableAnnotationView(withIdentifier: CustomAnnotation.identifier)
-        if annotationView == nil {
-            annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: CustomAnnotation.identifier)
-            
-            annotationView?.canShowCallout = true // 어노테이션 클릭 시 콜아웃(팝업) 표시
-            annotationView?.image = UIImage(systemName: "toilet.circle.fill")
-            
-            let button = UIButton(type: .detailDisclosure)
-            annotationView?.rightCalloutAccessoryView = button
+        guard let annotation = annotation as? ToiletAnnotation else {
+            return nil
         }
-        
-//        let annotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: CustomAnnotation.identifier)
-        return annotationView
+        return ToiletAnnotationView(annotation: annotation, reuseIdentifier: ToiletAnnotationView.identifier)
     }
+
+//    // 재사용 식별자를 사용해서 AnnotationView 생성
+//    private func setToiletAnnotationView(for annotation: ToiletAnnotation, on mapView: MKMapView) -> MKAnnotationView {
+//        let reuseIdentifier = ToiletAnnotation.identifier
+//        let toiletAnnotationView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseIdentifier, for: annotation)
+//        
+//        toiletAnnotationView.canShowCallout = true
+//        
+//        // Provide the annotation view's image.
+//        let image = UIImage(systemName: "toilet.circle.fill")!
+//        toiletAnnotationView.image = image
+//        
+//        // Provide the left image icon for the annotation.
+//        toiletAnnotationView.leftCalloutAccessoryView = UIImageView(image: UIImage(systemName: "star"))
+//        
+//        let button = UIButton(type: .detailDisclosure)
+//        toiletAnnotationView.rightCalloutAccessoryView = button
+//        
+//        // Offset the flag annotation so that the flag pole rests on the map coordinate.
+//        let offset = CGPoint(x: image.size.width / 2, y: -(image.size.height / 2))
+//        toiletAnnotationView.centerOffset = offset
+//        
+//        return toiletAnnotationView
+//    }
     
     // MKAnnotationView에서 콜아웃 버튼을 탭할 때 호출
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {

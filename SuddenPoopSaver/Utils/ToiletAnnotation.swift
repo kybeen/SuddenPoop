@@ -8,12 +8,14 @@
 import UIKit
 import MapKit
 
-final class CustomAnnotation: NSObject, MKAnnotation {
-    static let identifier = "CustomAnnotation"
+final class ToiletAnnotation: NSObject, MKAnnotation {
+
+//    static let identifier = "toiletAnnotation"
     
+    @objc dynamic var coordinate: CLLocationCoordinate2D
     var title: String?
     var subtitle: String?
-    @objc dynamic var coordinate: CLLocationCoordinate2D
+    var imageName: String?
     
     init(title: String, subtitle: String, coordinate: CLLocationCoordinate2D) {
         self.title = title

@@ -1,5 +1,5 @@
 //
-//  MainView.swift
+//  MainMapView.swift
 //  SuddenPoopSaver
 //
 //  Created by 김영빈 on 2023/10/25.
@@ -8,7 +8,7 @@
 import UIKit
 import MapKit
 
-final class MainView: UIView {
+final class MainMapView: UIView {
     
     let mapView: MKMapView = {
         let mapView = MKMapView()
@@ -45,17 +45,17 @@ final class MainView: UIView {
 // MARK: - Preview canvas 세팅
 import SwiftUI
 
-struct MainViewControllerRepresentable: UIViewControllerRepresentable {
-    typealias UIViewControllerType = MainViewController
-    func makeUIViewController(context: Context) -> MainViewController {
-        return MainViewController()
+struct MainMapViewControllerRepresentable: UIViewControllerRepresentable {
+    typealias UIViewControllerType = MainMapViewController
+    func makeUIViewController(context: Context) -> MainMapViewController {
+        return MainMapViewController()
     }
-    func updateUIViewController(_ uiViewController: MainViewController, context: Context) {
+    func updateUIViewController(_ uiViewController: MainMapViewController, context: Context) {
     }
 }
 @available(iOS 13.0.0, *)
-struct MainViewPreview: PreviewProvider {
+struct MainMapViewPreview: PreviewProvider {
     static var previews: some View {
-        MainViewControllerRepresentable()
+        MainMapViewControllerRepresentable()
     }
 }

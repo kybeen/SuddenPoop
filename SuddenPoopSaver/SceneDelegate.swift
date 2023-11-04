@@ -20,9 +20,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
         window = UIWindow(windowScene: windowScene)
-        let mainViewController = MainViewController()
+        let mainMapViewController = MainMapViewController()
 
-        self.window?.rootViewController = mainViewController
+        self.window?.rootViewController = mainMapViewController
         self.window?.makeKeyAndVisible()
     }
 
